@@ -25,18 +25,18 @@
       radial-gradient(circle at 10% 0%, rgba(123,97,255,.10), transparent 25%),
       radial-gradient(circle at 90% 0%, rgba(255,179,71,.12), transparent 24%),
       linear-gradient(180deg,#f0fbff 0%,#f8fdff 38%,#f6fbff 100%);}
-    body{min-height:100vh}
-    .wrap{width:min(100%,1140px);margin:0 auto;padding:18px 14px 44px}
+    body{min-height:100vh;font-size:20px}
+    .wrap{width:min(100%,1200px);margin:0 auto;padding:20px 16px 50px}
     .hero{
       position:relative;overflow:hidden;border-radius:34px;padding:30px 24px 24px;
       background:linear-gradient(135deg,#58a6ff 0%,#7b61ff 46%,#ffb347 100%);
       color:#fff;box-shadow:0 24px 50px rgba(88,166,255,.22);margin-bottom:18px;
     }
-    .hero h1{margin:10px 0 8px;font-size:clamp(30px,4.4vw,48px);line-height:1.15}
-    .hero p{margin:0;max-width:760px;line-height:1.8;opacity:.97}
+    .hero h1{margin:12px 0 10px;font-size:clamp(40px,5.6vw,64px);line-height:1.12;font-weight:900}
+    .hero p{margin:0;max-width:880px;line-height:1.8;opacity:.97;font-size:clamp(22px,2.4vw,28px);font-weight:700}
     .badge{
       display:inline-flex;align-items:center;gap:8px;
-      padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;
+      padding:10px 16px;border-radius:999px;font-size:18px;font-weight:900;
       background:rgba(255,255,255,.18);backdrop-filter:blur(8px);
     }
     .cloud,.star,.pencil,.book{position:absolute;opacity:.22;pointer-events:none}
@@ -47,25 +47,25 @@
     .hero-row{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:stretch;margin-top:18px}
     .panel{
       background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.55);
-      border-radius:28px;box-shadow:var(--shadow);padding:20px;color:var(--ink);
+      border-radius:28px;box-shadow:var(--shadow);padding:24px;color:var(--ink);
     }
-    .panel h2{margin:0 0 10px;font-size:24px}
-    .panel .tiny{font-size:13px;color:#eef}
+    .panel h2{margin:0 0 12px;font-size:32px;font-weight:900}
+    .panel .tiny{font-size:20px;color:#eef;line-height:1.8;font-weight:700}
     .grid{display:grid;gap:16px}
     .two{grid-template-columns:1fr 1fr}
-    .field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-    .field label{font-weight:900;font-size:15px}
+    .field{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+    .field label{font-weight:900;font-size:24px}
     .field input,.field select{
-      width:100%;border:1px solid #cfe2ff;border-radius:18px;padding:14px 15px;
-      font:inherit;background:#fff;color:var(--ink);transition:.18s ease;
+      width:100%;border:1px solid #cfe2ff;border-radius:20px;padding:18px 18px;
+      font:inherit;background:#fff;color:var(--ink);transition:.18s ease;font-size:24px;font-weight:700;
     }
     .field input:focus,.field select:focus{
       outline:none;border-color:#7da9ff;box-shadow:0 0 0 4px rgba(79,124,255,.14);transform:translateY(-1px)
     }
-    .hint{font-size:12px;line-height:1.6;color:var(--muted)}
+    .hint{font-size:18px;line-height:1.7;color:var(--muted);font-weight:700}
     .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
     .btn{
-      border:0;border-radius:999px;padding:13px 20px;font:inherit;font-weight:900;cursor:pointer;
+      border:0;border-radius:999px;padding:18px 28px;font:inherit;font-size:24px;font-weight:900;cursor:pointer;
       transition:transform .08s ease, box-shadow .18s ease, opacity .18s ease;
     }
     .btn:hover{transform:translateY(-1px)}
@@ -75,7 +75,7 @@
     .btn-secondary{background:#eef6ff;color:#28507a}
     .btn-fun{background:linear-gradient(135deg,#42c7a2 0%,#4f7cff 100%);color:#fff}
     .status{
-      margin-top:14px;padding:14px 16px;border-radius:18px;display:none;line-height:1.75;white-space:pre-wrap
+      margin-top:16px;padding:18px 20px;border-radius:20px;display:none;line-height:1.8;white-space:pre-wrap;font-size:22px;font-weight:800
     }
     .status.show{display:block}
     .status.ok{background:#ecfff6;border:1px solid #b8ecd0;color:#168254}
@@ -85,16 +85,16 @@
       background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.2);border-radius:22px;
       padding:14px;text-align:center;backdrop-filter:blur(8px)
     }
-    .mini-card .emoji{font-size:28px}
-    .mini-card .label{margin-top:6px;font-weight:900}
+    .mini-card .emoji{font-size:42px}
+    .mini-card .label{margin-top:8px;font-weight:900;font-size:24px}
     .card{
       background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:20px;
+      box-shadow:var(--shadow);padding:24px;
     }
     .topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
     .pill{
       display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;
-      background:#eef4ff;color:#345db6;font-size:12px;font-weight:900
+      background:#eef4ff;color:#345db6;font-size:18px;font-weight:900
     }
     .assignment-list{display:grid;gap:12px}
     .assignment-item{
@@ -105,15 +105,15 @@
       content:"";position:absolute;right:-24px;top:-24px;width:82px;height:82px;border-radius:50%;
       background:radial-gradient(circle, rgba(123,97,255,.12), transparent 68%);
     }
-    .assignment-title{margin:0;font-size:19px;font-weight:900}
-    .assignment-desc{margin-top:6px;color:var(--muted);line-height:1.7;font-size:14px}
+    .assignment-title{margin:0;font-size:28px;font-weight:900;line-height:1.35}
+    .assignment-desc{margin-top:8px;color:var(--muted);line-height:1.8;font-size:20px;font-weight:700}
     .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    .footer-note{margin-top:14px;font-size:13px;line-height:1.7;color:var(--muted)}
+    .footer-note{margin-top:16px;font-size:19px;line-height:1.8;color:var(--muted);font-weight:700}
     .empty{
-      padding:18px;border:2px dashed #cfe0ff;border-radius:22px;background:#fbfdff;
-      color:var(--muted);text-align:center;line-height:1.7
+      padding:22px;border:2px dashed #cfe0ff;border-radius:22px;background:#fbfdff;
+      color:var(--muted);text-align:center;line-height:1.8;font-size:22px;font-weight:700
     }
-    .loading-note{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff}
+    .loading-note{display:flex;align-items:center;gap:12px;font-weight:900;color:#fff;font-size:24px}
     .loading-dot{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:18px 0 0 rgba(255,255,255,.7),36px 0 0 rgba(255,255,255,.45);animation:bob 1s infinite ease-in-out}
     @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
     .success-card{
@@ -121,8 +121,8 @@
       background:linear-gradient(135deg,#f0fff6 0%,#f6fbff 100%);border:1px solid #bcead1
     }
     .success-card.show{display:block}
-    .success-title{margin:0 0 6px;font-size:20px;color:#0e8a58}
-    .saved-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+    .success-title{margin:0 0 8px;font-size:30px;color:#0e8a58}
+    .saved-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all;font-size:20px;line-height:1.8}
     .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
     .piece{
       position:absolute;top:-20px;width:10px;height:16px;border-radius:4px;
@@ -137,9 +137,18 @@
       .mini-cards{grid-template-columns:1fr}
     }
     @media (max-width: 640px){
+      body{font-size:18px}
       .wrap{padding:12px 10px 32px}
       .hero{border-radius:26px;padding:24px 18px 18px}
       .panel,.card{padding:16px}
+      .hero h1{font-size:40px}
+      .hero p{font-size:20px}
+      .panel h2{font-size:28px}
+      .field label{font-size:22px}
+      .field input,.field select{font-size:22px}
+      .btn{font-size:22px;width:100%;justify-content:center}
+      .assignment-title{font-size:24px}
+      .assignment-desc,.footer-note,.hint,.empty{font-size:18px}
     }
   </style>
 </head>
@@ -151,7 +160,7 @@
       <div class="pencil">🖍️</div>
       <div class="book">📚</div>
 
-      <div class="badge">🎈 免登入上傳｜作業小郵差</div>
+      <div class="badge">🎈 免登入上傳｜作業小郵差任務站</div>
       <h1 id="appTitle">作業上傳小站</h1>
       <p id="heroText">正在讀取老師設定的作業項目，請稍候一下下…</p>
 
@@ -230,13 +239,13 @@
             </div>
             <div class="mini-card">
               <div class="emoji">📎</div>
-              <div class="label">選對檔案</div>
+              <div class="label">檔案要選對</div>
               <div class="tiny">只接受老師開放的格式</div>
             </div>
             <div class="mini-card">
               <div class="emoji">✅</div>
-              <div class="label">看到成功</div>
-              <div class="tiny">出現成功訊息才算完成</div>
+              <div class="label">看到成功訊息</div>
+              <div class="tiny">一定要看到完成通知才算成功</div>
             </div>
           </div>
 
@@ -250,7 +259,7 @@
 
     <section class="card">
       <div class="topbar">
-        <h2 style="margin:0;">目前可上傳的作業</h2>
+        <h2 style="margin:0;">老師目前開放的作業</h2>
         <span class="pill" id="assignmentCount">0 個項目</span>
       </div>
       <div class="assignment-list" id="assignmentList"></div>
@@ -265,6 +274,8 @@
       assignments: [],
       uploading: false,
       callbackName: '__hwUploadConfigCallback',
+      uploadResultTimer: null,
+      uploadFrameFallbackTimer: null,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -280,11 +291,12 @@
       if (data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
 
       state.uploading = false;
+      clearUploadTimers();
       setUploading(false);
 
       if (data.success) {
         showStatus(data.message || '上傳成功！', 'ok');
-        $('savedNameBox').textContent = data.savedName || '';
+        $('savedNameBox').textContent = (data.savedName || '') + (data.folderPath ? '\n已存入：' + data.folderPath : '');
         $('successCard').classList.add('show');
         $('fileInput').value = '';
         createConfetti();
@@ -297,6 +309,7 @@
     function bindEvents() {
       $('assignmentId').addEventListener('change', updateAssignmentUI);
       $('uploadForm').addEventListener('submit', handleSubmit);
+      $('uploadTarget').addEventListener('load', handleUploadFrameLoad);
       $('resetBtn').addEventListener('click', resetForm);
       $('reloadBtn').addEventListener('click', loadPublicConfig);
     }
@@ -361,7 +374,7 @@
       } else {
         list.innerHTML = state.assignments.map(item => {
           const desc = item.description ? `<div class="assignment-desc">${escapeHtml(item.description)}</div>` : '';
-          const folderText = item.subfolderName ? `子資料夾：${escapeHtml(item.subfolderName)}` : '主資料夾';
+          const folderText = `資料夾：${escapeHtml(item.uploadFolderLabel || item.title || '')}`;
           const exts = (item.allowedExtensions || []).join(', ');
           return `
             <div class="assignment-item">
@@ -433,6 +446,7 @@
 
         showStatus('檔案處理中，請不要關閉頁面…', 'ok');
         $('successCard').classList.remove('show');
+        clearUploadTimers();
         state.uploading = true;
         setUploading(true);
 
@@ -442,11 +456,45 @@
         $('mimeType').value = file.type || 'application/octet-stream';
         $('size').value = String(file.size);
 
+        state.uploadResultTimer = window.setTimeout(() => {
+          if (!state.uploading) return;
+          state.uploading = false;
+          setUploading(false);
+          showStatus('系統等待回應較久，請先不要重複上傳。若老師雲端資料夾已經看到你的檔案，代表通常已經上傳成功；可以重新整理頁面後再確認。', 'error');
+        }, 45000);
+
         $('uploadForm').submit();
       } catch (error) {
         state.uploading = false;
+        clearUploadTimers();
         setUploading(false);
         showStatus(error.message || '上傳失敗。', 'error');
+      }
+    }
+
+
+    function handleUploadFrameLoad() {
+      if (!state.uploading) return;
+      if (state.uploadFrameFallbackTimer) {
+        clearTimeout(state.uploadFrameFallbackTimer);
+      }
+      state.uploadFrameFallbackTimer = window.setTimeout(() => {
+        if (!state.uploading) return;
+        state.uploading = false;
+        clearUploadTimers();
+        setUploading(false);
+        showStatus('伺服器已收到回應，但頁面沒有成功接到完成訊號。若老師雲端資料夾已經看到你的檔案，通常表示上傳已完成，請不要立刻重複上傳。', 'error');
+      }, 2500);
+    }
+
+    function clearUploadTimers() {
+      if (state.uploadResultTimer) {
+        clearTimeout(state.uploadResultTimer);
+        state.uploadResultTimer = null;
+      }
+      if (state.uploadFrameFallbackTimer) {
+        clearTimeout(state.uploadFrameFallbackTimer);
+        state.uploadFrameFallbackTimer = null;
       }
     }
 
@@ -508,7 +556,17 @@
     }
 
     function isAllowedOrigin(origin) {
-      return /^https:\/\/script\.google(?:usercontent)?\.com$/.test(origin);
+      try {
+        const url = new URL(origin);
+        if (url.protocol !== 'https:') return false;
+        const host = url.hostname;
+        return host === 'script.google.com'
+          || host === 'script.googleusercontent.com'
+          || host.endsWith('.script.google.com')
+          || host.endsWith('.script.googleusercontent.com');
+      } catch (error) {
+        return false;
+      }
     }
 
     function createConfetti() {
