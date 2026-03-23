@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>作業上傳小站</title>
+  <script src="./config.js"></script>
+  <style>
+    :root{
+      --sky:#eef9ff;
+      --card:#ffffff;
+      --ink:#23415f;
+      --muted:#65819a;
+      --line:#d7e9ff;
+      --brand:#4f7cff;
+      --brand2:#7b61ff;
+      --sun:#ffb347;
+      --mint:#42c7a2;
+      --pink:#ff78a9;
+      --shadow:0 18px 40px rgba(66,114,203,.12);
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:
+      radial-gradient(circle at 10% 0%, rgba(123,97,255,.10), transparent 25%),
+      radial-gradient(circle at 90% 0%, rgba(255,179,71,.12), transparent 24%),
+      linear-gradient(180deg,#f0fbff 0%,#f8fdff 38%,#f6fbff 100%);}
+    body{min-height:100vh}
+    .wrap{width:min(100%,1140px);margin:0 auto;padding:18px 14px 44px}
+    .hero{
+      position:relative;overflow:hidden;border-radius:34px;padding:30px 24px 24px;
+      background:linear-gradient(135deg,#58a6ff 0%,#7b61ff 46%,#ffb347 100%);
+      color:#fff;box-shadow:0 24px 50px rgba(88,166,255,.22);margin-bottom:18px;
+    }
+    .hero h1{margin:10px 0 8px;font-size:clamp(30px,4.4vw,48px);line-height:1.15}
+    .hero p{margin:0;max-width:760px;line-height:1.8;opacity:.97}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;
+      background:rgba(255,255,255,.18);backdrop-filter:blur(8px);
+    }
+    .cloud,.star,.pencil,.book{position:absolute;opacity:.22;pointer-events:none}
+    .cloud{font-size:54px;top:16px;right:20px}
+    .star{font-size:34px;top:72px;right:104px}
+    .pencil{font-size:36px;bottom:18px;right:146px}
+    .book{font-size:34px;bottom:18px;right:38px}
+    .hero-row{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:stretch;margin-top:18px}
+    .panel{
+      background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.55);
+      border-radius:28px;box-shadow:var(--shadow);padding:20px;color:var(--ink);
+    }
+    .panel h2{margin:0 0 10px;font-size:24px}
+    .panel .tiny{font-size:13px;color:#eef}
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:1fr 1fr}
+    .field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+    .field label{font-weight:900;font-size:15px}
+    .field input,.field select{
+      width:100%;border:1px solid #cfe2ff;border-radius:18px;padding:14px 15px;
+      font:inherit;background:#fff;color:var(--ink);transition:.18s ease;
+    }
+    .field input:focus,.field select:focus{
+      outline:none;border-color:#7da9ff;box-shadow:0 0 0 4px rgba(79,124,255,.14);transform:translateY(-1px)
+    }
+    .hint{font-size:12px;line-height:1.6;color:var(--muted)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .btn{
+      border:0;border-radius:999px;padding:13px 20px;font:inherit;font-weight:900;cursor:pointer;
+      transition:transform .08s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(1px)}
+    .btn:disabled{opacity:.58;cursor:not-allowed}
+    .btn-primary{background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%);color:#fff;box-shadow:0 14px 24px rgba(79,124,255,.22)}
+    .btn-secondary{background:#eef6ff;color:#28507a}
+    .btn-fun{background:linear-gradient(135deg,#42c7a2 0%,#4f7cff 100%);color:#fff}
+    .status{
+      margin-top:14px;padding:14px 16px;border-radius:18px;display:none;line-height:1.75;white-space:pre-wrap
+    }
+    .status.show{display:block}
+    .status.ok{background:#ecfff6;border:1px solid #b8ecd0;color:#168254}
+    .status.error{background:#fff2f6;border:1px solid #ffc7d6;color:#bc355d}
+    .mini-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    .mini-card{
+      background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.2);border-radius:22px;
+      padding:14px;text-align:center;backdrop-filter:blur(8px)
+    }
+    .mini-card .emoji{font-size:28px}
+    .mini-card .label{margin-top:6px;font-weight:900}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:20px;
+    }
+    .topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;
+      background:#eef4ff;color:#345db6;font-size:12px;font-weight:900
+    }
+    .assignment-list{display:grid;gap:12px}
+    .assignment-item{
+      position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;padding:16px;
+      background:linear-gradient(180deg,#fff 0%,#f8fbff 100%);
+    }
+    .assignment-item::after{
+      content:"";position:absolute;right:-24px;top:-24px;width:82px;height:82px;border-radius:50%;
+      background:radial-gradient(circle, rgba(123,97,255,.12), transparent 68%);
+    }
+    .assignment-title{margin:0;font-size:19px;font-weight:900}
+    .assignment-desc{margin-top:6px;color:var(--muted);line-height:1.7;font-size:14px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .footer-note{margin-top:14px;font-size:13px;line-height:1.7;color:var(--muted)}
+    .empty{
+      padding:18px;border:2px dashed #cfe0ff;border-radius:22px;background:#fbfdff;
+      color:var(--muted);text-align:center;line-height:1.7
+    }
+    .loading-note{display:flex;align-items:center;gap:10px;font-weight:800;color:#fff}
+    .loading-dot{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:18px 0 0 rgba(255,255,255,.7),36px 0 0 rgba(255,255,255,.45);animation:bob 1s infinite ease-in-out}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    .success-card{
+      display:none;margin-top:14px;border-radius:22px;padding:16px;
+      background:linear-gradient(135deg,#f0fff6 0%,#f6fbff 100%);border:1px solid #bcead1
+    }
+    .success-card.show{display:block}
+    .success-title{margin:0 0 6px;font-size:20px;color:#0e8a58}
+    .saved-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    .piece{
+      position:absolute;top:-20px;width:10px;height:16px;border-radius:4px;
+      animation:fall 1.7s linear forwards
+    }
+    @keyframes fall{
+      to{transform:translateY(110vh) rotate(620deg);opacity:.2}
+    }
+    iframe{display:none}
+    @media (max-width: 960px){
+      .hero-row,.two{grid-template-columns:1fr}
+      .mini-cards{grid-template-columns:1fr}
+    }
+    @media (max-width: 640px){
+      .wrap{padding:12px 10px 32px}
+      .hero{border-radius:26px;padding:24px 18px 18px}
+      .panel,.card{padding:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="cloud">☁️</div>
+      <div class="star">⭐</div>
+      <div class="pencil">🖍️</div>
+      <div class="book">📚</div>
+
+      <div class="badge">🎈 免登入上傳｜作業小郵差</div>
+      <h1 id="appTitle">作業上傳小站</h1>
+      <p id="heroText">正在讀取老師設定的作業項目，請稍候一下下…</p>
+
+      <div class="hero-row">
+        <div class="panel">
+          <div class="loading-note" id="loadingNote">
+            <span class="loading-dot"></span>
+            <span>正在連線到作業清單...</span>
+          </div>
+
+          <form id="uploadForm" action="" method="POST" target="uploadTarget">
+            <input type="hidden" name="base64Data" id="base64Data">
+            <input type="hidden" name="originalName" id="originalName">
+            <input type="hidden" name="mimeType" id="mimeType">
+            <input type="hidden" name="size" id="size">
+
+            <div class="field">
+              <label for="className">班級</label>
+              <input id="className" name="className" type="text" placeholder="例如：一年仁班 / 六年甲班">
+            </div>
+
+            <div class="grid two">
+              <div class="field">
+                <label for="seatNo">座號</label>
+                <input id="seatNo" name="seatNo" type="text" inputmode="numeric" placeholder="例如：5、12、28">
+              </div>
+              <div class="field">
+                <label for="studentName">姓名</label>
+                <input id="studentName" name="studentName" type="text" placeholder="請輸入姓名">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="assignmentId">作業項目</label>
+              <select id="assignmentId" name="assignmentId">
+                <option value="">請先選擇作業</option>
+              </select>
+              <div class="hint" id="assignmentHint">請先載入作業列表。</div>
+            </div>
+
+            <div class="field">
+              <label for="fileInput">選擇檔案</label>
+              <input id="fileInput" type="file">
+              <div class="hint" id="fileHint">允許格式會依作業項目自動調整。</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" id="submitBtn" type="submit">🚀 上傳作業</button>
+              <button class="btn btn-secondary" id="resetBtn" type="button">🧽 清除重填</button>
+              <button class="btn btn-fun" id="reloadBtn" type="button">🔄 重新載入作業</button>
+            </div>
+
+            <div id="statusBox" class="status"></div>
+            <div class="success-card" id="successCard">
+              <h3 class="success-title">🎉 上傳完成！</h3>
+              <div>系統已幫你收好作業。</div>
+              <div style="margin-top:8px;">儲存檔名：</div>
+              <div class="saved-name" id="savedNameBox"></div>
+            </div>
+
+            <div class="footer-note">檔名會自動改成「班級_座號_姓名_作業名稱.副檔名」。如果同名重複上傳，系統會自動補上時間戳記，避免覆蓋原檔。</div>
+          </form>
+
+          <iframe name="uploadTarget" id="uploadTarget"></iframe>
+        </div>
+
+        <div class="panel">
+          <h2>上傳小提醒</h2>
+          <div class="tiny">先看清楚老師設定的作業格式，再挑選正確的檔案喔！</div>
+
+          <div class="mini-cards">
+            <div class="mini-card">
+              <div class="emoji">📝</div>
+              <div class="label">先填資料</div>
+              <div class="tiny">班級、座號、姓名要完整</div>
+            </div>
+            <div class="mini-card">
+              <div class="emoji">📎</div>
+              <div class="label">選對檔案</div>
+              <div class="tiny">只接受老師開放的格式</div>
+            </div>
+            <div class="mini-card">
+              <div class="emoji">✅</div>
+              <div class="label">看到成功</div>
+              <div class="tiny">出現成功訊息才算完成</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <div class="pill">🌈 作業項目</div>
+            <div class="footer-note" id="infoText">載入中…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="topbar">
+        <h2 style="margin:0;">目前可上傳的作業</h2>
+        <span class="pill" id="assignmentCount">0 個項目</span>
+      </div>
+      <div class="assignment-list" id="assignmentList"></div>
+    </section>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    const state = {
+      config: null,
+      assignments: [],
+      uploading: false,
+      callbackName: '__hwUploadConfigCallback',
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      bindEvents();
+      loadPublicConfig();
+    });
+
+    window.addEventListener('message', (event) => {
+      if (!isAllowedOrigin(event.origin)) return;
+      const data = event.data || {};
+      if (data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
+
+      state.uploading = false;
+      setUploading(false);
+
+      if (data.success) {
+        showStatus(data.message || '上傳成功！', 'ok');
+        $('savedNameBox').textContent = data.savedName || '';
+        $('successCard').classList.add('show');
+        $('fileInput').value = '';
+        createConfetti();
+      } else {
+        $('successCard').classList.remove('show');
+        showStatus(data.message || '上傳失敗。', 'error');
+      }
+    });
+
+    function bindEvents() {
+      $('assignmentId').addEventListener('change', updateAssignmentUI);
+      $('uploadForm').addEventListener('submit', handleSubmit);
+      $('resetBtn').addEventListener('click', resetForm);
+      $('reloadBtn').addEventListener('click', loadPublicConfig);
+    }
+
+    function loadPublicConfig() {
+      const gasUrl = getGasUrl();
+      $('loadingNote').style.display = 'flex';
+      hideStatus();
+      $('successCard').classList.remove('show');
+
+      if (!gasUrl || gasUrl.includes('PASTE_YOUR_GAS_WEB_APP_EXEC_URL_HERE')) {
+        showStatus('請先打開 github-pages/config.js，貼上你的 GAS Web App /exec 網址。', 'error');
+        return;
+      }
+
+      if (window[state.callbackName]) {
+        try { delete window[state.callbackName]; } catch (e) {}
+      }
+
+      window[state.callbackName] = function(data) {
+        state.config = data;
+        state.assignments = Array.isArray(data.assignments) ? data.assignments : [];
+        renderApp();
+        $('loadingNote').style.display = 'none';
+      };
+
+      const script = document.createElement('script');
+      script.src = `${gasUrl}?api=config&callback=${state.callbackName}&_=${Date.now()}`;
+      script.async = true;
+      script.onerror = function() {
+        $('loadingNote').style.display = 'none';
+        showStatus('無法讀取作業清單，請檢查 GAS 網址是否正確，或稍後再試。', 'error');
+      };
+
+      const old = document.getElementById('jsonpScript');
+      if (old) old.remove();
+      script.id = 'jsonpScript';
+      document.body.appendChild(script);
+    }
+
+    function renderApp() {
+      const c = state.config || {};
+      $('appTitle').textContent = c.appTitle || '作業上傳小站';
+      $('heroText').textContent = c.schoolName || '請依老師規定完成作業後上傳。';
+      $('infoText').textContent = c.infoText || '';
+      $('assignmentCount').textContent = `${state.assignments.length} 個項目`;
+
+      $('uploadForm').action = c.uploadEndpoint || getGasUrl();
+
+      const select = $('assignmentId');
+      select.innerHTML = '<option value="">請先選擇作業</option>';
+      state.assignments.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.title;
+        select.appendChild(option);
+      });
+
+      const list = $('assignmentList');
+      if (!state.assignments.length) {
+        list.innerHTML = '<div class="empty">目前沒有啟用中的作業項目，請稍後再試或通知老師。</div>';
+      } else {
+        list.innerHTML = state.assignments.map(item => {
+          const desc = item.description ? `<div class="assignment-desc">${escapeHtml(item.description)}</div>` : '';
+          const folderText = item.subfolderName ? `子資料夾：${escapeHtml(item.subfolderName)}` : '主資料夾';
+          const exts = (item.allowedExtensions || []).join(', ');
+          return `
+            <div class="assignment-item">
+              <div class="topbar">
+                <p class="assignment-title">${escapeHtml(item.title)}</p>
+                <span class="pill">上限 ${item.maxSizeMb} MB</span>
+              </div>
+              ${desc}
+              <div class="meta">
+                <span class="pill">格式 ${escapeHtml(exts)}</span>
+                <span class="pill">${folderText}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      updateAssignmentUI();
+    }
+
+    function updateAssignmentUI() {
+      const assignment = getSelectedAssignment();
+      const fileInput = $('fileInput');
+
+      if (!assignment) {
+        $('assignmentHint').textContent = '請先選擇作業，再選擇檔案。';
+        $('fileHint').textContent = '允許格式會依作業項目自動調整。';
+        fileInput.value = '';
+        fileInput.removeAttribute('accept');
+        return;
+      }
+
+      const exts = assignment.allowedExtensions || [];
+      $('assignmentHint').textContent = assignment.description || '請依老師要求上傳正確檔案。';
+      $('fileHint').textContent = `允許格式：${exts.join(', ')}｜大小上限：${assignment.maxSizeMb} MB`;
+      fileInput.setAttribute('accept', exts.join(','));
+    }
+
+    function getSelectedAssignment() {
+      const id = $('assignmentId').value;
+      return state.assignments.find(item => item.id === id) || null;
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      if (state.uploading) return;
+
+      const assignment = getSelectedAssignment();
+      const file = $('fileInput').files[0];
+      const className = $('className').value.trim();
+      const seatNo = $('seatNo').value.trim();
+      const studentName = $('studentName').value.trim();
+
+      try {
+        if (!state.config) throw new Error('作業清單尚未載入完成。');
+        if (!className) throw new Error('請先輸入班級。');
+        if (!seatNo) throw new Error('請先輸入座號。');
+        if (!studentName) throw new Error('請先輸入姓名。');
+        if (!assignment) throw new Error('請先選擇作業項目。');
+        if (!file) throw new Error('請先選擇要上傳的檔案。');
+
+        const ext = getExtension(file.name);
+        if (!assignment.allowedExtensions.includes(ext)) {
+          throw new Error(`此作業只接受 ${assignment.allowedExtensions.join(', ')} 格式。`);
+        }
+        if (file.size > assignment.maxSizeMb * 1024 * 1024) {
+          throw new Error(`檔案過大，請控制在 ${assignment.maxSizeMb} MB 以內。`);
+        }
+
+        showStatus('檔案處理中，請不要關閉頁面…', 'ok');
+        $('successCard').classList.remove('show');
+        state.uploading = true;
+        setUploading(true);
+
+        const base64Data = await readFileAsBase64(file);
+        $('base64Data').value = base64Data;
+        $('originalName').value = file.name;
+        $('mimeType').value = file.type || 'application/octet-stream';
+        $('size').value = String(file.size);
+
+        $('uploadForm').submit();
+      } catch (error) {
+        state.uploading = false;
+        setUploading(false);
+        showStatus(error.message || '上傳失敗。', 'error');
+      }
+    }
+
+    function resetForm() {
+      $('className').value = '';
+      $('seatNo').value = '';
+      $('studentName').value = '';
+      $('assignmentId').value = '';
+      $('fileInput').value = '';
+      $('base64Data').value = '';
+      $('originalName').value = '';
+      $('mimeType').value = '';
+      $('size').value = '';
+      $('successCard').classList.remove('show');
+      updateAssignmentUI();
+      hideStatus();
+    }
+
+    function setUploading(uploading) {
+      $('submitBtn').disabled = uploading;
+      $('resetBtn').disabled = uploading;
+      $('reloadBtn').disabled = uploading;
+      $('submitBtn').textContent = uploading ? '⏳ 上傳中…' : '🚀 上傳作業';
+    }
+
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || '');
+          const parts = result.split(',');
+          resolve(parts[1] || '');
+        };
+        reader.onerror = () => reject(new Error('讀取檔案失敗，請重新選擇檔案。'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showStatus(message, type) {
+      const box = $('statusBox');
+      box.className = `status show ${type}`;
+      box.innerHTML = escapeHtml(message).replace(/\n/g, '<br>');
+    }
+
+    function hideStatus() {
+      const box = $('statusBox');
+      box.className = 'status';
+      box.innerHTML = '';
+    }
+
+    function getGasUrl() {
+      return ((window.HW_UPLOAD_CONFIG || {}).GAS_WEB_APP_URL || '').trim();
+    }
+
+    function getExtension(filename) {
+      const index = String(filename || '').lastIndexOf('.');
+      if (index < 0) throw new Error('檔案必須包含副檔名。');
+      return String(filename.slice(index)).toLowerCase();
+    }
+
+    function isAllowedOrigin(origin) {
+      return /^https:\/\/script\.google(?:usercontent)?\.com$/.test(origin);
+    }
+
+    function createConfetti() {
+      const wrap = $('confetti');
+      wrap.innerHTML = '';
+      const colors = ['#4f7cff','#7b61ff','#ffb347','#42c7a2','#ff78a9'];
+
+      for (let i = 0; i < 26; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'piece';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.opacity = 0.92;
+        piece.style.transform = `translateY(0) rotate(${Math.random() * 180}deg)`;
+        piece.style.animationDelay = `${Math.random() * 0.28}s`;
+        piece.style.animationDuration = `${1.3 + Math.random() * 1.2}s`;
+        wrap.appendChild(piece);
+      }
+
+      setTimeout(() => { wrap.innerHTML = ''; }, 2400);
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
