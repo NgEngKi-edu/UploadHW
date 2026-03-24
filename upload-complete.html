@@ -19,9 +19,15 @@
       }
       const payload=parsePayload();
       if(!payload){document.getElementById('msg').textContent='找不到上傳結果資料。';return;}
-      try{ if(window.parent) window.parent.postMessage(payload, window.location.origin); }catch(e){}
-      try{ if(window.top && window.top!==window.parent) window.top.postMessage(payload, window.location.origin); }catch(e){}
-      document.getElementById('msg').textContent = payload.success ? '已成功回報上傳完成，這個小頁面可以直接忽略。' : (payload.message || '上傳失敗。');
+      try{ localStorage.setItem('hwUploadLastResult', JSON.stringify(payload)); }catch(e){}
+      try{ localStorage.setItem('hwUploadLastResultTs', String(Date.now())); }catch(e){}
+      try{ if(window.parent) window.parent.postMessage(payload, '*'); }catch(e){}
+      try{ if(window.parent) window.parent.postMessage(JSON.stringify(payload), '*'); }catch(e){}
+      try{ if(window.top && window.top!==window.parent) window.top.postMessage(payload, '*'); }catch(e){}
+      try{ if(window.top && window.top!==window.parent) window.top.postMessage(JSON.stringify(payload), '*'); }catch(e){}
+      var okMsg = payload.success ? '已成功回報上傳完成，這個小頁面可以直接忽略。' : (payload.message || '上傳失敗。');
+      document.getElementById('msg').textContent = okMsg;
+      setTimeout(function(){ try{ localStorage.setItem('hwUploadLastResult', JSON.stringify(payload)); localStorage.setItem('hwUploadLastResultTs', String(Date.now())); }catch(e){} }, 500);
     })();
   </script>
 </body>
