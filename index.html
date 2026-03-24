@@ -204,16 +204,17 @@
             <input type="hidden" name="mimeType" id="mimeType">
             <input type="hidden" name="size" id="size">
             <input type="hidden" name="callbackUrl" id="callbackUrl">
+            <input type="hidden" name="uploadToken" id="uploadToken">
 
             <div class="field">
               <label for="className">班級</label>
-              <input id="className" name="className" type="text" placeholder="例如：302 / 601">
+              <input id="className" name="className" type="text" placeholder="例如：303 / 601">
             </div>
 
             <div class="grid two">
               <div class="field">
                 <label for="seatNo">座號</label>
-                <input id="seatNo" name="seatNo" type="text" inputmode="numeric" placeholder="例如：05、12、23">
+                <input id="seatNo" name="seatNo" type="text" inputmode="numeric" placeholder="例如：05、12、28">
               </div>
               <div class="field">
                 <label for="studentName">姓名</label>
@@ -306,6 +307,9 @@
       uploadFrameFallbackTimer: null,
       uploadSubmitTs: 0,
       localResultPollTimer: null,
+      uploadPollTimer: null,
+      uploadPollCounter: 0,
+      currentUploadToken: '',
     };
 
     const $ = (id) => document.getElementById(id);
@@ -328,7 +332,6 @@ window.addEventListener('message', (event) => {
     function bindEvents() {
       $('assignmentId').addEventListener('change', updateAssignmentUI);
       $('uploadForm').addEventListener('submit', handleSubmit);
-      $('uploadTarget').addEventListener('load', handleUploadFrameLoad);
       $('resetBtn').addEventListener('click', resetForm);
       $('reloadBtn').addEventListener('click', loadPublicConfig);
     }
@@ -471,6 +474,7 @@ window.addEventListener('message', (event) => {
         clearUploadTimers();
         state.uploading = true;
         state.uploadSubmitTs = Date.now();
+        state.currentUploadToken = createUploadToken();
         try { localStorage.removeItem(LOCAL_RESULT_KEY); localStorage.removeItem(LOCAL_RESULT_TS_KEY); } catch (e) {}
         setUploading(true);
 
@@ -480,15 +484,19 @@ window.addEventListener('message', (event) => {
         $('mimeType').value = file.type || 'application/octet-stream';
         $('size').value = String(file.size);
         $('callbackUrl').value = getUploadCallbackUrl();
+        $('uploadToken').value = state.currentUploadToken;
 
         state.uploadResultTimer = window.setTimeout(() => {
           if (!state.uploading) return;
           state.uploading = false;
+          clearUploadTimers();
           setUploading(false);
           showStatus('系統等待回應較久，請先不要重複上傳。若老師雲端資料夾已經看到你的檔案，代表通常已經上傳成功；可以重新整理頁面後再確認。', 'error');
-        }, 45000);
+        }, 60000);
 
         $('uploadForm').submit();
+        showStatus('資料已送出，系統正在確認上傳結果…', 'ok');
+        startUploadResultPolling(state.currentUploadToken);
       } catch (error) {
         state.uploading = false;
         clearUploadTimers();
@@ -499,45 +507,17 @@ window.addEventListener('message', (event) => {
 
 
     function handleUploadFrameLoad() {
-      if (!state.uploading) return;
-      try {
-        const frame = $('uploadTarget');
-        const href = frame.contentWindow && frame.contentWindow.location ? String(frame.contentWindow.location.href || '') : '';
-        if (href && href.startsWith(window.location.origin)) {
-          const url = new URL(href);
-          if (/\/upload-complete\.html$/i.test(url.pathname)) {
-            const hash = url.hash || '';
-            const match = hash.match(/(?:^#|&)result=([^&]+)/);
-            if (match && match[1]) {
-              const data = normalizeMessageData(decodeURIComponent(match[1]));
-              if (data && data.type === 'GAS_HOMEWORK_UPLOAD_RESULT') {
-                handleUploadResult(data);
-                return;
-              }
-            }
-          }
-        }
-      } catch (error) {
-        // 跨網域中的 iframe 讀不到內容是正常情況，交給下方備援流程。
-      }
-
-      startLocalResultPolling();
-      if (state.uploadFrameFallbackTimer) {
-        clearTimeout(state.uploadFrameFallbackTimer);
-      }
-      state.uploadFrameFallbackTimer = window.setTimeout(() => {
-        if (!state.uploading) return;
-        state.uploading = false;
-        clearUploadTimers();
-        setUploading(false);
-        showStatus('老師端若已看到你的檔案，通常表示上傳完成。這台裝置沒有成功收到自動完成通知，請不要立刻重複上傳。', 'ok');
-      }, 12000);
+      // v7 主要改為由前臺主動輪詢 GAS 查詢上傳結果，
+      // 不再依賴 iframe 成功訊號，因此這裡保留空函式以兼容舊版結構。
     }
 
     function handleUploadResult(data) {
       state.uploading = false;
       clearUploadTimers();
       setUploading(false);
+
+      $('uploadToken').value = '';
+      state.currentUploadToken = '';
 
       if (data.success) {
         showStatus(data.message || '上傳成功！', 'ok');
@@ -564,6 +544,10 @@ window.addEventListener('message', (event) => {
       if (state.localResultPollTimer) {
         clearInterval(state.localResultPollTimer);
         state.localResultPollTimer = null;
+      }
+      if (state.uploadPollTimer) {
+        clearInterval(state.uploadPollTimer);
+        state.uploadPollTimer = null;
       }
     }
 
@@ -600,6 +584,57 @@ window.addEventListener('message', (event) => {
         reader.onerror = () => reject(new Error('讀取檔案失敗，請重新選擇檔案。'));
         reader.readAsDataURL(file);
       });
+    }
+
+
+    function createUploadToken() {
+      return 'up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function startUploadResultPolling(token) {
+      if (!token) return;
+      if (state.uploadPollTimer) {
+        clearInterval(state.uploadPollTimer);
+      }
+      state.uploadPollCounter = 0;
+      queryUploadResultOnce(token);
+      state.uploadPollTimer = window.setInterval(function() {
+        if (!state.uploading) {
+          clearInterval(state.uploadPollTimer);
+          state.uploadPollTimer = null;
+          return;
+        }
+        state.uploadPollCounter += 1;
+        queryUploadResultOnce(token);
+        if (state.uploadPollCounter >= 40) {
+          clearInterval(state.uploadPollTimer);
+          state.uploadPollTimer = null;
+        }
+      }, 1500);
+    }
+
+    function queryUploadResultOnce(token) {
+      const gasUrl = getGasUrl();
+      if (!gasUrl || !token) return;
+      const callbackName = '__hwUploadResultCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = gasUrl + '?api=result&token=' + encodeURIComponent(token) + '&callback=' + callbackName + '&_=' + Date.now();
+      window[callbackName] = function(data) {
+        try {
+          if (data && data.found && data.result) {
+            handleUploadResult(data.result);
+          }
+        } finally {
+          try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+      };
+      script.onerror = function() {
+        try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
+        if (script.parentNode) script.parentNode.removeChild(script);
+      };
+      document.body.appendChild(script);
     }
 
 
