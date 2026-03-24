@@ -21,25 +21,25 @@
       --radius:28px;
 
       /* 可自行調整的字體大小 */
-      --fs-body:20px;
-      --fs-hero-title:clamp(40px,5.6vw,64px);
-      --fs-hero-text:clamp(22px,2.4vw,28px);
-      --fs-panel-title:32px;
-      --fs-label:24px;
-      --fs-input:24px;
-      --fs-hint:18px;
-      --fs-btn:24px;
-      --fs-status:22px;
-      --fs-mini-tiny:20px;
-      --fs-mini-label:24px;
-      --fs-pill:18px;
-      --fs-assignment-title:28px;
-      --fs-assignment-desc:20px;
-      --fs-footer:19px;
-      --fs-empty:22px;
-      --fs-loading:24px;
-      --fs-success-title:30px;
-      --fs-saved-name:20px;
+      --fs-body:16px;
+      --fs-hero-title:clamp(32px,4.48vw,51px);
+      --fs-hero-text:clamp(18px,1.92vw,22px);
+      --fs-panel-title:26px;
+      --fs-label:19px;
+      --fs-input:19px;
+      --fs-hint:14px;
+      --fs-btn:19px;
+      --fs-status:18px;
+      --fs-mini-tiny:16px;
+      --fs-mini-label:19px;
+      --fs-pill:14px;
+      --fs-assignment-title:22px;
+      --fs-assignment-desc:16px;
+      --fs-footer:15px;
+      --fs-empty:14px;
+      --fs-loading:19px;
+      --fs-success-title:24px;
+      --fs-saved-name:16px;
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:
@@ -153,47 +153,26 @@
       to{transform:translateY(110vh) rotate(620deg);opacity:.2}
     }
     iframe{display:none}
-
-    .font-toolbar{
-      position:sticky;top:10px;z-index:30;display:flex;justify-content:flex-end;margin-bottom:12px;
-    }
-    .font-box{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-      background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:999px;
-      box-shadow:var(--shadow);padding:10px 14px;
-    }
-    .font-box strong{font-size:18px;color:var(--ink)}
-    .font-value{min-width:64px;text-align:center;font-size:18px;font-weight:900;color:#345db6}
-    .font-tool-btn{
-      border:0;border-radius:999px;padding:10px 14px;background:#eef4ff;color:#345db6;
-      font:inherit;font-size:18px;font-weight:900;cursor:pointer;
-    }
-    .font-tool-btn:hover{transform:translateY(-1px)}
-    .font-tip{width:100%;font-size:15px;line-height:1.5;color:var(--muted);font-weight:700;padding-left:4px}
     @media (max-width: 960px){
       .hero-row,.two{grid-template-columns:1fr}
       .mini-cards{grid-template-columns:1fr}
     }
     @media (max-width: 640px){
       :root{
-        --fs-body:18px;
-        --fs-hero-title:40px;
-        --fs-hero-text:20px;
-        --fs-panel-title:28px;
-        --fs-label:22px;
-        --fs-input:22px;
-        --fs-btn:22px;
-        --fs-assignment-title:24px;
-        --fs-assignment-desc:18px;
-        --fs-footer:18px;
-        --fs-hint:18px;
-        --fs-empty:18px;
+        --fs-body:14px;
+        --fs-hero-title:32px;
+        --fs-hero-text:16px;
+        --fs-panel-title:22px;
+        --fs-label:18px;
+        --fs-input:18px;
+        --fs-btn:18px;
+        --fs-assignment-title:19px;
+        --fs-assignment-desc:14px;
+        --fs-footer:14px;
+        --fs-hint:14px;
+        --fs-empty:14px;
       }
       .wrap{padding:12px 10px 32px}
-      .font-toolbar{top:6px;margin-bottom:10px}
-      .font-box{border-radius:24px;padding:10px 12px;gap:8px}
-      .font-box strong,.font-value,.font-tool-btn{font-size:16px}
-      .font-tip{font-size:14px}
       .hero{border-radius:26px;padding:24px 18px 18px}
       .panel,.card{padding:16px}
       .btn{width:100%;justify-content:center}
@@ -202,16 +181,6 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="font-toolbar">
-      <div class="font-box">
-        <strong>🔠 字體大小</strong>
-        <button class="font-tool-btn" id="fontDownBtn" type="button">A－</button>
-        <button class="font-tool-btn" id="fontResetBtn" type="button">預設</button>
-        <button class="font-tool-btn" id="fontUpBtn" type="button">A＋</button>
-        <span class="font-value" id="fontScaleValue">100%</span>
-        <div class="font-tip">可直接試看大小；若要固定給所有學生，請到 config.js 修改 <code>DEFAULT_FONT_SCALE</code>。</div>
-      </div>
-    </div>
     <section class="hero">
       <div class="cloud">☁️</div>
       <div class="star">⭐</div>
@@ -335,13 +304,15 @@
       callbackName: '__hwUploadConfigCallback',
       uploadResultTimer: null,
       uploadFrameFallbackTimer: null,
+      uploadSubmitTs: 0,
+      localResultPollTimer: null,
     };
 
     const $ = (id) => document.getElementById(id);
 
     window.addEventListener('DOMContentLoaded', () => {
       bindEvents();
-      initFontScale();
+      initUploadResultBridge();
       loadPublicConfig();
     });
 
@@ -360,66 +331,10 @@ window.addEventListener('message', (event) => {
       $('uploadTarget').addEventListener('load', handleUploadFrameLoad);
       $('resetBtn').addEventListener('click', resetForm);
       $('reloadBtn').addEventListener('click', loadPublicConfig);
-      $('fontDownBtn').addEventListener('click', () => changeFontScale(-0.05));
-      $('fontUpBtn').addEventListener('click', () => changeFontScale(0.05));
-      $('fontResetBtn').addEventListener('click', resetFontScale);
     }
 
-    const FONT_SCALE_STORAGE_KEY = 'hwUploadFontScale';
-    const FONT_SCALE_MIN = 0.85;
-    const FONT_SCALE_MAX = 1.45;
-    const FONT_SCALE_STEP = 0.05;
-
-    function initFontScale() {
-      const configured = Number((window.HW_UPLOAD_CONFIG || {}).DEFAULT_FONT_SCALE);
-      const saved = Number(localStorage.getItem(FONT_SCALE_STORAGE_KEY));
-      const start = clampFontScale(Number.isFinite(saved) && saved > 0 ? saved : (Number.isFinite(configured) && configured > 0 ? configured : 1));
-      applyFontScale(start, false);
-    }
-
-    function clampFontScale(value) {
-      const rounded = Math.round(value / FONT_SCALE_STEP) * FONT_SCALE_STEP;
-      return Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, Number(rounded.toFixed(2))));
-    }
-
-    function changeFontScale(delta) {
-      const current = Number(document.documentElement.dataset.fontScale || '1');
-      applyFontScale(current + delta, true);
-    }
-
-    function resetFontScale() {
-      const configured = Number((window.HW_UPLOAD_CONFIG || {}).DEFAULT_FONT_SCALE);
-      const fallback = Number.isFinite(configured) && configured > 0 ? configured : 1;
-      localStorage.removeItem(FONT_SCALE_STORAGE_KEY);
-      applyFontScale(fallback, false);
-    }
-
-    function applyFontScale(scale, shouldSave) {
-      const s = clampFontScale(scale);
-      document.documentElement.dataset.fontScale = String(s);
-      const root = document.documentElement.style;
-      root.setProperty('--fs-body', `${Math.round(20 * s)}px`);
-      root.setProperty('--fs-hero-title', `clamp(${Math.round(40 * s)}px, ${(5.6 * s).toFixed(2)}vw, ${Math.round(64 * s)}px)`);
-      root.setProperty('--fs-hero-text', `clamp(${Math.round(22 * s)}px, ${(2.4 * s).toFixed(2)}vw, ${Math.round(28 * s)}px)`);
-      root.setProperty('--fs-panel-title', `${Math.round(32 * s)}px`);
-      root.setProperty('--fs-label', `${Math.round(24 * s)}px`);
-      root.setProperty('--fs-input', `${Math.round(24 * s)}px`);
-      root.setProperty('--fs-hint', `${Math.round(18 * s)}px`);
-      root.setProperty('--fs-btn', `${Math.round(24 * s)}px`);
-      root.setProperty('--fs-status', `${Math.round(22 * s)}px`);
-      root.setProperty('--fs-mini-tiny', `${Math.round(20 * s)}px`);
-      root.setProperty('--fs-mini-label', `${Math.round(24 * s)}px`);
-      root.setProperty('--fs-pill', `${Math.round(18 * s)}px`);
-      root.setProperty('--fs-assignment-title', `${Math.round(28 * s)}px`);
-      root.setProperty('--fs-assignment-desc', `${Math.round(20 * s)}px`);
-      root.setProperty('--fs-footer', `${Math.round(19 * s)}px`);
-      root.setProperty('--fs-empty', `${Math.round(22 * s)}px`);
-      root.setProperty('--fs-loading', `${Math.round(24 * s)}px`);
-      root.setProperty('--fs-success-title', `${Math.round(30 * s)}px`);
-      root.setProperty('--fs-saved-name', `${Math.round(20 * s)}px`);
-      $('fontScaleValue').textContent = `${Math.round(s * 100)}%`;
-      if (shouldSave) localStorage.setItem(FONT_SCALE_STORAGE_KEY, String(s));
-    }
+    const LOCAL_RESULT_KEY = 'hwUploadLastResult';
+    const LOCAL_RESULT_TS_KEY = 'hwUploadLastResultTs';
 
     function loadPublicConfig() {
       const gasUrl = getGasUrl();
@@ -555,6 +470,8 @@ window.addEventListener('message', (event) => {
         $('successCard').classList.remove('show');
         clearUploadTimers();
         state.uploading = true;
+        state.uploadSubmitTs = Date.now();
+        try { localStorage.removeItem(LOCAL_RESULT_KEY); localStorage.removeItem(LOCAL_RESULT_TS_KEY); } catch (e) {}
         setUploading(true);
 
         const base64Data = await readFileAsBase64(file);
@@ -604,6 +521,7 @@ window.addEventListener('message', (event) => {
         // 跨網域中的 iframe 讀不到內容是正常情況，交給下方備援流程。
       }
 
+      startLocalResultPolling();
       if (state.uploadFrameFallbackTimer) {
         clearTimeout(state.uploadFrameFallbackTimer);
       }
@@ -612,8 +530,8 @@ window.addEventListener('message', (event) => {
         state.uploading = false;
         clearUploadTimers();
         setUploading(false);
-        showStatus('伺服器已收到回應，但頁面沒有成功接到完成訊號。若老師雲端資料夾已經看到你的檔案，通常表示上傳已完成，請不要立刻重複上傳。\n\n若要完全修正這個問題，請確認 GitHub 前臺已另外放上 upload-complete.html。', 'error');
-      }, 3000);
+        showStatus('老師端若已看到你的檔案，通常表示上傳完成。這台裝置沒有成功收到自動完成通知，請不要立刻重複上傳。', 'ok');
+      }, 12000);
     }
 
     function handleUploadResult(data) {
@@ -642,6 +560,10 @@ window.addEventListener('message', (event) => {
       if (state.uploadFrameFallbackTimer) {
         clearTimeout(state.uploadFrameFallbackTimer);
         state.uploadFrameFallbackTimer = null;
+      }
+      if (state.localResultPollTimer) {
+        clearInterval(state.localResultPollTimer);
+        state.localResultPollTimer = null;
       }
     }
 
@@ -680,6 +602,46 @@ window.addEventListener('message', (event) => {
       });
     }
 
+
+
+    function initUploadResultBridge() {
+      window.addEventListener('storage', function(event) {
+        if (!event || event.key !== LOCAL_RESULT_KEY || !state.uploading) return;
+        const data = normalizeMessageData(event.newValue);
+        const ts = Number(localStorage.getItem(LOCAL_RESULT_TS_KEY) || '0');
+        if (data && ts >= state.uploadSubmitTs) {
+          handleUploadResult(data);
+        }
+      });
+    }
+
+    function startLocalResultPolling() {
+      if (state.localResultPollTimer) {
+        clearInterval(state.localResultPollTimer);
+      }
+      let tries = 0;
+      state.localResultPollTimer = window.setInterval(function() {
+        if (!state.uploading) {
+          clearInterval(state.localResultPollTimer);
+          state.localResultPollTimer = null;
+          return;
+        }
+        tries += 1;
+        try {
+          const raw = localStorage.getItem(LOCAL_RESULT_KEY);
+          const ts = Number(localStorage.getItem(LOCAL_RESULT_TS_KEY) || '0');
+          const data = normalizeMessageData(raw);
+          if (data && ts >= state.uploadSubmitTs) {
+            handleUploadResult(data);
+            return;
+          }
+        } catch (e) {}
+        if (tries >= 30) {
+          clearInterval(state.localResultPollTimer);
+          state.localResultPollTimer = null;
+        }
+      }, 500);
+    }
 
     function normalizeMessageData(data) {
       if (data && typeof data === 'object') return data;
