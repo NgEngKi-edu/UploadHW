@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>上傳完成中繼頁</title>
+  <style>body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:#f6fbff;color:#23415f}.box{display:grid;place-items:center;min-height:100vh;padding:20px;text-align:center}.card{max-width:560px;background:#fff;border:1px solid #d7e9ff;border-radius:24px;padding:24px;box-shadow:0 18px 40px rgba(66,114,203,.12)}h1{margin:0 0 10px;font-size:28px}p{margin:0;line-height:1.8;font-size:18px}</style>
+</head>
+<body>
+  <div class="box"><div class="card"><h1>📬 正在回報上傳結果</h1><p id="msg">請稍候，系統正在把結果送回上一頁…</p></div></div>
+  <script>
+    (function(){
+      function parsePayload(){
+        const hash=String(window.location.hash||'').replace(/^#/,'');
+        const params=new URLSearchParams(hash);
+        const raw=params.get('result');
+        if(!raw) return null;
+        try{return JSON.parse(decodeURIComponent(raw));}catch(e){return null;}
+      }
+      const payload=parsePayload();
+      if(!payload){document.getElementById('msg').textContent='找不到上傳結果資料。';return;}
+      try{ if(window.parent) window.parent.postMessage(payload, window.location.origin); }catch(e){}
+      try{ if(window.top && window.top!==window.parent) window.top.postMessage(payload, window.location.origin); }catch(e){}
+      document.getElementById('msg').textContent = payload.success ? '已成功回報上傳完成，這個小頁面可以直接忽略。' : (payload.message || '上傳失敗。');
+    })();
+  </script>
+</body>
+</html>
