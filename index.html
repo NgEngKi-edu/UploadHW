@@ -153,6 +153,23 @@
       to{transform:translateY(110vh) rotate(620deg);opacity:.2}
     }
     iframe{display:none}
+
+    .font-toolbar{
+      position:sticky;top:10px;z-index:30;display:flex;justify-content:flex-end;margin-bottom:12px;
+    }
+    .font-box{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:999px;
+      box-shadow:var(--shadow);padding:10px 14px;
+    }
+    .font-box strong{font-size:18px;color:var(--ink)}
+    .font-value{min-width:64px;text-align:center;font-size:18px;font-weight:900;color:#345db6}
+    .font-tool-btn{
+      border:0;border-radius:999px;padding:10px 14px;background:#eef4ff;color:#345db6;
+      font:inherit;font-size:18px;font-weight:900;cursor:pointer;
+    }
+    .font-tool-btn:hover{transform:translateY(-1px)}
+    .font-tip{width:100%;font-size:15px;line-height:1.5;color:var(--muted);font-weight:700;padding-left:4px}
     @media (max-width: 960px){
       .hero-row,.two{grid-template-columns:1fr}
       .mini-cards{grid-template-columns:1fr}
@@ -173,6 +190,10 @@
         --fs-empty:18px;
       }
       .wrap{padding:12px 10px 32px}
+      .font-toolbar{top:6px;margin-bottom:10px}
+      .font-box{border-radius:24px;padding:10px 12px;gap:8px}
+      .font-box strong,.font-value,.font-tool-btn{font-size:16px}
+      .font-tip{font-size:14px}
       .hero{border-radius:26px;padding:24px 18px 18px}
       .panel,.card{padding:16px}
       .btn{width:100%;justify-content:center}
@@ -181,6 +202,16 @@
 </head>
 <body>
   <div class="wrap">
+    <div class="font-toolbar">
+      <div class="font-box">
+        <strong>🔠 字體大小</strong>
+        <button class="font-tool-btn" id="fontDownBtn" type="button">A－</button>
+        <button class="font-tool-btn" id="fontResetBtn" type="button">預設</button>
+        <button class="font-tool-btn" id="fontUpBtn" type="button">A＋</button>
+        <span class="font-value" id="fontScaleValue">100%</span>
+        <div class="font-tip">可直接試看大小；若要固定給所有學生，請到 config.js 修改 <code>DEFAULT_FONT_SCALE</code>。</div>
+      </div>
+    </div>
     <section class="hero">
       <div class="cloud">☁️</div>
       <div class="star">⭐</div>
@@ -203,6 +234,7 @@
             <input type="hidden" name="originalName" id="originalName">
             <input type="hidden" name="mimeType" id="mimeType">
             <input type="hidden" name="size" id="size">
+            <input type="hidden" name="callbackUrl" id="callbackUrl">
 
             <div class="field">
               <label for="className">班級</label>
@@ -309,29 +341,18 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       bindEvents();
+      initFontScale();
       loadPublicConfig();
     });
 
-    window.addEventListener('message', (event) => {
-      const data = normalizeMessageData(event.data);
-      if (!data || data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
-      if (!isAllowedOrigin(event.origin, data)) return;
+    
+window.addEventListener('message', (event) => {
+  const data = normalizeMessageData(event.data);
+  if (!data || data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
+  if (!isAllowedOrigin(event.origin, data)) return;
+  handleUploadResult(data);
+});
 
-      state.uploading = false;
-      clearUploadTimers();
-      setUploading(false);
-
-      if (data.success) {
-        showStatus(data.message || '上傳成功！', 'ok');
-        $('savedNameBox').textContent = (data.savedName || '') + (data.folderPath ? '\n已存入：' + data.folderPath : '');
-        $('successCard').classList.add('show');
-        $('fileInput').value = '';
-        createConfetti();
-      } else {
-        $('successCard').classList.remove('show');
-        showStatus(data.message || '上傳失敗。', 'error');
-      }
-    });
 
     function bindEvents() {
       $('assignmentId').addEventListener('change', updateAssignmentUI);
@@ -339,6 +360,65 @@
       $('uploadTarget').addEventListener('load', handleUploadFrameLoad);
       $('resetBtn').addEventListener('click', resetForm);
       $('reloadBtn').addEventListener('click', loadPublicConfig);
+      $('fontDownBtn').addEventListener('click', () => changeFontScale(-0.05));
+      $('fontUpBtn').addEventListener('click', () => changeFontScale(0.05));
+      $('fontResetBtn').addEventListener('click', resetFontScale);
+    }
+
+    const FONT_SCALE_STORAGE_KEY = 'hwUploadFontScale';
+    const FONT_SCALE_MIN = 0.85;
+    const FONT_SCALE_MAX = 1.45;
+    const FONT_SCALE_STEP = 0.05;
+
+    function initFontScale() {
+      const configured = Number((window.HW_UPLOAD_CONFIG || {}).DEFAULT_FONT_SCALE);
+      const saved = Number(localStorage.getItem(FONT_SCALE_STORAGE_KEY));
+      const start = clampFontScale(Number.isFinite(saved) && saved > 0 ? saved : (Number.isFinite(configured) && configured > 0 ? configured : 1));
+      applyFontScale(start, false);
+    }
+
+    function clampFontScale(value) {
+      const rounded = Math.round(value / FONT_SCALE_STEP) * FONT_SCALE_STEP;
+      return Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, Number(rounded.toFixed(2))));
+    }
+
+    function changeFontScale(delta) {
+      const current = Number(document.documentElement.dataset.fontScale || '1');
+      applyFontScale(current + delta, true);
+    }
+
+    function resetFontScale() {
+      const configured = Number((window.HW_UPLOAD_CONFIG || {}).DEFAULT_FONT_SCALE);
+      const fallback = Number.isFinite(configured) && configured > 0 ? configured : 1;
+      localStorage.removeItem(FONT_SCALE_STORAGE_KEY);
+      applyFontScale(fallback, false);
+    }
+
+    function applyFontScale(scale, shouldSave) {
+      const s = clampFontScale(scale);
+      document.documentElement.dataset.fontScale = String(s);
+      const root = document.documentElement.style;
+      root.setProperty('--fs-body', `${Math.round(20 * s)}px`);
+      root.setProperty('--fs-hero-title', `clamp(${Math.round(40 * s)}px, ${(5.6 * s).toFixed(2)}vw, ${Math.round(64 * s)}px)`);
+      root.setProperty('--fs-hero-text', `clamp(${Math.round(22 * s)}px, ${(2.4 * s).toFixed(2)}vw, ${Math.round(28 * s)}px)`);
+      root.setProperty('--fs-panel-title', `${Math.round(32 * s)}px`);
+      root.setProperty('--fs-label', `${Math.round(24 * s)}px`);
+      root.setProperty('--fs-input', `${Math.round(24 * s)}px`);
+      root.setProperty('--fs-hint', `${Math.round(18 * s)}px`);
+      root.setProperty('--fs-btn', `${Math.round(24 * s)}px`);
+      root.setProperty('--fs-status', `${Math.round(22 * s)}px`);
+      root.setProperty('--fs-mini-tiny', `${Math.round(20 * s)}px`);
+      root.setProperty('--fs-mini-label', `${Math.round(24 * s)}px`);
+      root.setProperty('--fs-pill', `${Math.round(18 * s)}px`);
+      root.setProperty('--fs-assignment-title', `${Math.round(28 * s)}px`);
+      root.setProperty('--fs-assignment-desc', `${Math.round(20 * s)}px`);
+      root.setProperty('--fs-footer', `${Math.round(19 * s)}px`);
+      root.setProperty('--fs-empty', `${Math.round(22 * s)}px`);
+      root.setProperty('--fs-loading', `${Math.round(24 * s)}px`);
+      root.setProperty('--fs-success-title', `${Math.round(30 * s)}px`);
+      root.setProperty('--fs-saved-name', `${Math.round(20 * s)}px`);
+      $('fontScaleValue').textContent = `${Math.round(s * 100)}%`;
+      if (shouldSave) localStorage.setItem(FONT_SCALE_STORAGE_KEY, String(s));
     }
 
     function loadPublicConfig() {
@@ -482,6 +562,7 @@
         $('originalName').value = file.name;
         $('mimeType').value = file.type || 'application/octet-stream';
         $('size').value = String(file.size);
+        $('callbackUrl').value = getUploadCallbackUrl();
 
         state.uploadResultTimer = window.setTimeout(() => {
           if (!state.uploading) return;
@@ -502,6 +583,27 @@
 
     function handleUploadFrameLoad() {
       if (!state.uploading) return;
+      try {
+        const frame = $('uploadTarget');
+        const href = frame.contentWindow && frame.contentWindow.location ? String(frame.contentWindow.location.href || '') : '';
+        if (href && href.startsWith(window.location.origin)) {
+          const url = new URL(href);
+          if (/\/upload-complete\.html$/i.test(url.pathname)) {
+            const hash = url.hash || '';
+            const match = hash.match(/(?:^#|&)result=([^&]+)/);
+            if (match && match[1]) {
+              const data = normalizeMessageData(decodeURIComponent(match[1]));
+              if (data && data.type === 'GAS_HOMEWORK_UPLOAD_RESULT') {
+                handleUploadResult(data);
+                return;
+              }
+            }
+          }
+        }
+      } catch (error) {
+        // 跨網域中的 iframe 讀不到內容是正常情況，交給下方備援流程。
+      }
+
       if (state.uploadFrameFallbackTimer) {
         clearTimeout(state.uploadFrameFallbackTimer);
       }
@@ -510,11 +612,29 @@
         state.uploading = false;
         clearUploadTimers();
         setUploading(false);
-        showStatus('伺服器已收到回應，但頁面沒有成功接到完成訊號。若老師雲端資料夾已經看到你的檔案，通常表示上傳已完成，請不要立刻重複上傳。', 'error');
-      }, 2500);
+        showStatus('伺服器已收到回應，但頁面沒有成功接到完成訊號。若老師雲端資料夾已經看到你的檔案，通常表示上傳已完成，請不要立刻重複上傳。\n\n若要完全修正這個問題，請確認 GitHub 前臺已另外放上 upload-complete.html。', 'error');
+      }, 3000);
+    }
+
+    function handleUploadResult(data) {
+      state.uploading = false;
+      clearUploadTimers();
+      setUploading(false);
+
+      if (data.success) {
+        showStatus(data.message || '上傳成功！', 'ok');
+        $('savedNameBox').textContent = (data.savedName || '') + (data.folderPath ? '\n已存入：' + data.folderPath : '');
+        $('successCard').classList.add('show');
+        $('fileInput').value = '';
+        createConfetti();
+      } else {
+        $('successCard').classList.remove('show');
+        showStatus(data.message || '上傳失敗。', 'error');
+      }
     }
 
     function clearUploadTimers() {
+
       if (state.uploadResultTimer) {
         clearTimeout(state.uploadResultTimer);
         state.uploadResultTimer = null;
@@ -589,6 +709,10 @@
       return ((window.HW_UPLOAD_CONFIG || {}).GAS_WEB_APP_URL || '').trim();
     }
 
+    function getUploadCallbackUrl() {
+      return new URL('./upload-complete.html', window.location.href).toString();
+    }
+
     function getExtension(filename) {
       const index = String(filename || '').lastIndexOf('.');
       if (index < 0) throw new Error('檔案必須包含副檔名。');
@@ -599,6 +723,7 @@
       if (data && data.type === 'GAS_HOMEWORK_UPLOAD_RESULT' && (!origin || origin === 'null')) {
         return true;
       }
+      if (origin === window.location.origin) return true;
       try {
         const url = new URL(origin);
         if (url.protocol !== 'https:') return false;
