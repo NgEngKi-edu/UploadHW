@@ -208,13 +208,13 @@
 
             <div class="field">
               <label for="className">班級</label>
-              <input id="className" name="className" type="text" placeholder="例如：303 / 601">
+              <input id="className" name="className" type="text" inputmode="numeric" maxlength="3" placeholder="三位數，例如 303／401／504／602">
             </div>
 
             <div class="grid two">
               <div class="field">
                 <label for="seatNo">座號</label>
-                <input id="seatNo" name="seatNo" type="text" inputmode="numeric" placeholder="例如：05、12、28">
+                <input id="seatNo" name="seatNo" type="text" inputmode="numeric" maxlength="2" placeholder="兩位數，例如 05／16／28">
               </div>
               <div class="field">
                 <label for="studentName">姓名</label>
@@ -763,6 +763,93 @@ window.addEventListener('message', (event) => {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-  </script>
+  <script>
+(function () {
+  var classInput = document.querySelector('#className') || document.querySelector('[name="className"]');
+  var seatInput = document.querySelector('#seatNo') || document.querySelector('[name="seatNo"]');
+  var submitBtn = document.querySelector('#uploadBtn') || document.querySelector('button[type="submit"]') || document.querySelector('input[type="submit"]');
+  var form = document.querySelector('#uploadForm') || document.querySelector('form');
+
+  if (!classInput || !seatInput || !submitBtn || !form) return;
+
+  function ensureHintEl(input, hintId) {
+    var el = document.getElementById(hintId);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = hintId;
+      el.style.marginTop = '8px';
+      el.style.fontSize = '16px';
+      el.style.fontWeight = '700';
+      el.style.lineHeight = '1.6';
+      input.parentNode.appendChild(el);
+    }
+    return el;
+  }
+
+  var classHint = ensureHintEl(classInput, 'classNameHint');
+  var seatHint = ensureHintEl(seatInput, 'seatNoHint');
+
+  function isValidClassName(value) {
+    return /^\d{3}$/.test(String(value || '').trim());
+  }
+
+  function isValidSeatNo(value) {
+    return /^\d{2}$/.test(String(value || '').trim());
+  }
+
+  function setHint(el, ok, message) {
+    el.textContent = message || '';
+    el.style.color = ok ? '#0f766e' : '#dc2626';
+  }
+
+  function refreshValidation() {
+    var classVal = String(classInput.value || '').trim();
+    var seatVal = String(seatInput.value || '').trim();
+
+    var classOk = isValidClassName(classVal);
+    var seatOk = isValidSeatNo(seatVal);
+
+    if (!classVal) {
+      setHint(classHint, false, '請輸入班級（3 碼數字，例如 303、601）');
+    } else if (!classOk) {
+      setHint(classHint, false, '班級格式錯誤，請輸入 3 碼數字，例如 303、601');
+    } else {
+      setHint(classHint, true, '班級格式正確');
+    }
+
+    if (!seatVal) {
+      setHint(seatHint, false, '請輸入座號（2 碼數字，例如 05、13、26）');
+    } else if (!seatOk) {
+      setHint(seatHint, false, '座號格式錯誤，請輸入 2 碼數字，例如 05、13、26');
+    } else {
+      setHint(seatHint, true, '座號格式正確');
+    }
+
+    classInput.setCustomValidity(classOk ? '' : '班級格式錯誤');
+    seatInput.setCustomValidity(seatOk ? '' : '座號格式錯誤');
+
+    submitBtn.disabled = !(classOk && seatOk);
+    submitBtn.style.opacity = submitBtn.disabled ? '0.6' : '1';
+    submitBtn.style.cursor = submitBtn.disabled ? 'not-allowed' : 'pointer';
+
+    return classOk && seatOk;
+  }
+
+  classInput.addEventListener('input', refreshValidation);
+  classInput.addEventListener('blur', refreshValidation);
+  seatInput.addEventListener('input', refreshValidation);
+  seatInput.addEventListener('blur', refreshValidation);
+
+  form.addEventListener('submit', function (e) {
+    if (!refreshValidation()) {
+      e.preventDefault();
+      alert('班級或座號格式錯誤，請修改後再上傳。\n\n班級：3 碼數字（例如 303、601）\n座號：2 碼數字（例如 05、13、26）');
+      return false;
+    }
+  });
+
+  refreshValidation();
+})();
+</script>
 </body>
 </html>
