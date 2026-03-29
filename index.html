@@ -41,11 +41,18 @@
       --fs-success-title:24px;
       --fs-saved-name:16px;
     }
+
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:
-      radial-gradient(circle at 10% 0%, rgba(123,97,255,.10), transparent 25%),
-      radial-gradient(circle at 90% 0%, rgba(255,179,71,.12), transparent 24%),
-      linear-gradient(180deg,#f0fbff 0%,#f8fdff 38%,#f6fbff 100%);}
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(123,97,255,.10), transparent 25%),
+        radial-gradient(circle at 90% 0%, rgba(255,179,71,.12), transparent 24%),
+        linear-gradient(180deg,#f0fbff 0%,#f8fdff 38%,#f6fbff 100%);
+    }
     body{min-height:100vh;font-size:var(--fs-body)}
     .wrap{width:min(100%,1200px);margin:0 auto;padding:20px 16px 50px}
     .hero{
@@ -78,25 +85,32 @@
     .field label{font-weight:900;font-size:var(--fs-label)}
     .field input,.field select{
       width:100%;border:1px solid #cfe2ff;border-radius:20px;padding:18px 18px;
-      font:inherit;background:#fff;color:var(--ink);transition:.18s ease;font-size:var(--fs-input);font-weight:700;
+      font:inherit;background:#fff;color:var(--ink);transition:.18s ease;
+      font-size:var(--fs-input);font-weight:700;
     }
     .field input:focus,.field select:focus{
       outline:none;border-color:#7da9ff;box-shadow:0 0 0 4px rgba(79,124,255,.14);transform:translateY(-1px)
     }
     .hint{font-size:var(--fs-hint);line-height:1.7;color:var(--muted);font-weight:700}
+    .hint.ok{color:#0f766e}
+    .hint.error{color:#dc2626}
     .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
     .btn{
-      border:0;border-radius:999px;padding:18px 28px;font:inherit;font-size:var(--fs-btn);font-weight:900;cursor:pointer;
-      transition:transform .08s ease, box-shadow .18s ease, opacity .18s ease;
+      border:0;border-radius:999px;padding:18px 28px;font:inherit;font-size:var(--fs-btn);
+      font-weight:900;cursor:pointer;transition:transform .08s ease, box-shadow .18s ease, opacity .18s ease;
     }
     .btn:hover{transform:translateY(-1px)}
     .btn:active{transform:translateY(1px)}
     .btn:disabled{opacity:.58;cursor:not-allowed}
-    .btn-primary{background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%);color:#fff;box-shadow:0 14px 24px rgba(79,124,255,.22)}
+    .btn-primary{
+      background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%);
+      color:#fff;box-shadow:0 14px 24px rgba(79,124,255,.22)
+    }
     .btn-secondary{background:#eef6ff;color:#28507a}
     .btn-fun{background:linear-gradient(135deg,#42c7a2 0%,#4f7cff 100%);color:#fff}
     .status{
-      margin-top:16px;padding:18px 20px;border-radius:20px;display:none;line-height:1.8;white-space:pre-wrap;font-size:var(--fs-status);font-weight:800
+      margin-top:16px;padding:18px 20px;border-radius:20px;display:none;
+      line-height:1.8;white-space:pre-wrap;font-size:var(--fs-status);font-weight:800
     }
     .status.show{display:block}
     .status.ok{background:#ecfff6;border:1px solid #b8ecd0;color:#168254}
@@ -135,7 +149,11 @@
       color:var(--muted);text-align:center;line-height:1.8;font-size:var(--fs-empty);font-weight:700
     }
     .loading-note{display:flex;align-items:center;gap:12px;font-weight:900;color:#fff;font-size:var(--fs-loading)}
-    .loading-dot{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:18px 0 0 rgba(255,255,255,.7),36px 0 0 rgba(255,255,255,.45);animation:bob 1s infinite ease-in-out}
+    .loading-dot{
+      width:10px;height:10px;border-radius:50%;background:#fff;
+      box-shadow:18px 0 0 rgba(255,255,255,.7),36px 0 0 rgba(255,255,255,.45);
+      animation:bob 1s infinite ease-in-out
+    }
     @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
     .success-card{
       display:none;margin-top:14px;border-radius:22px;padding:16px;
@@ -143,7 +161,10 @@
     }
     .success-card.show{display:block}
     .success-title{margin:0 0 8px;font-size:var(--fs-success-title);color:#0e8a58}
-    .saved-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all;font-size:var(--fs-saved-name);line-height:1.8}
+    .saved-name{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      word-break:break-all;font-size:var(--fs-saved-name);line-height:1.8
+    }
     .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
     .piece{
       position:absolute;top:-20px;width:10px;height:16px;border-radius:4px;
@@ -153,10 +174,12 @@
       to{transform:translateY(110vh) rotate(620deg);opacity:.2}
     }
     iframe{display:none}
+
     @media (max-width: 960px){
       .hero-row,.two{grid-template-columns:1fr}
       .mini-cards{grid-template-columns:1fr}
     }
+
     @media (max-width: 640px){
       :root{
         --fs-body:14px;
@@ -209,12 +232,14 @@
             <div class="field">
               <label for="className">班級</label>
               <input id="className" name="className" type="text" inputmode="numeric" maxlength="3" placeholder="三位數，例如 303／401／504／602">
+              <div class="hint" id="classNameHint">請輸入 3 碼數字班級，例如 303、601。</div>
             </div>
 
             <div class="grid two">
               <div class="field">
                 <label for="seatNo">座號</label>
                 <input id="seatNo" name="seatNo" type="text" inputmode="numeric" maxlength="2" placeholder="兩位數，例如 05／16／28">
+                <div class="hint" id="seatNoHint">請輸入 2 碼數字座號，例如 05、13、26。</div>
               </div>
               <div class="field">
                 <label for="studentName">姓名</label>
@@ -243,6 +268,7 @@
             </div>
 
             <div id="statusBox" class="status"></div>
+
             <div class="success-card" id="successCard">
               <h3 class="success-title">🎉 上傳完成！</h3>
               <div>系統已幫你收好作業。</div>
@@ -309,31 +335,89 @@
       localResultPollTimer: null,
       uploadPollTimer: null,
       uploadPollCounter: 0,
-      currentUploadToken: '',
+      currentUploadToken: ''
     };
 
     const $ = (id) => document.getElementById(id);
 
     window.addEventListener('DOMContentLoaded', () => {
       bindEvents();
+      initFieldValidation();
       initUploadResultBridge();
       loadPublicConfig();
     });
 
-    
-window.addEventListener('message', (event) => {
-  const data = normalizeMessageData(event.data);
-  if (!data || data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
-  if (!isAllowedOrigin(event.origin, data)) return;
-  handleUploadResult(data);
-});
-
+    window.addEventListener('message', (event) => {
+      const data = normalizeMessageData(event.data);
+      if (!data || data.type !== 'GAS_HOMEWORK_UPLOAD_RESULT') return;
+      if (!isAllowedOrigin(event.origin, data)) return;
+      handleUploadResult(data);
+    });
 
     function bindEvents() {
       $('assignmentId').addEventListener('change', updateAssignmentUI);
       $('uploadForm').addEventListener('submit', handleSubmit);
       $('resetBtn').addEventListener('click', resetForm);
       $('reloadBtn').addEventListener('click', loadPublicConfig);
+      $('className').addEventListener('input', refreshFieldValidation);
+      $('className').addEventListener('blur', refreshFieldValidation);
+      $('seatNo').addEventListener('input', refreshFieldValidation);
+      $('seatNo').addEventListener('blur', refreshFieldValidation);
+    }
+
+    function initFieldValidation() {
+      refreshFieldValidation();
+    }
+
+    function validateClassName(value) {
+      return /^\d{3}$/.test(String(value || '').trim());
+    }
+
+    function validateSeatNo(value) {
+      return /^\d{2}$/.test(String(value || '').trim());
+    }
+
+    function setHintState(el, ok, message) {
+      el.textContent = message || '';
+      el.classList.remove('ok', 'error');
+      el.classList.add(ok ? 'ok' : 'error');
+    }
+
+    function refreshFieldValidation() {
+      const classVal = $('className').value.trim();
+      const seatVal = $('seatNo').value.trim();
+      const classHint = $('classNameHint');
+      const seatHint = $('seatNoHint');
+
+      const classOk = validateClassName(classVal);
+      const seatOk = validateSeatNo(seatVal);
+
+      if (!classVal) {
+        setHintState(classHint, false, '請輸入班級（3 碼數字，例如 303、601）');
+      } else if (!classOk) {
+        setHintState(classHint, false, '班級格式錯誤，請輸入 3 碼數字，例如 303、601');
+      } else {
+        setHintState(classHint, true, '班級格式正確');
+      }
+
+      if (!seatVal) {
+        setHintState(seatHint, false, '請輸入座號（2 碼數字，例如 05、13、26）');
+      } else if (!seatOk) {
+        setHintState(seatHint, false, '座號格式錯誤，請輸入 2 碼數字，例如 05、13、26');
+      } else {
+        setHintState(seatHint, true, '座號格式正確');
+      }
+
+      $('className').setCustomValidity(classOk ? '' : '班級格式錯誤');
+      $('seatNo').setCustomValidity(seatOk ? '' : '座號格式錯誤');
+
+      if (!state.uploading) {
+        $('submitBtn').disabled = !(classOk && seatOk);
+        $('submitBtn').style.opacity = $('submitBtn').disabled ? '0.6' : '1';
+        $('submitBtn').style.cursor = $('submitBtn').disabled ? 'not-allowed' : 'pointer';
+      }
+
+      return classOk && seatOk;
     }
 
     const LOCAL_RESULT_KEY = 'hwUploadLastResult';
@@ -346,6 +430,7 @@ window.addEventListener('message', (event) => {
       $('successCard').classList.remove('show');
 
       if (!gasUrl || gasUrl.includes('PASTE_YOUR_GAS_WEB_APP_EXEC_URL_HERE')) {
+        $('loadingNote').style.display = 'none';
         showStatus('請先打開 github-pages/config.js，貼上你的 GAS Web App /exec 網址。', 'error');
         return;
       }
@@ -455,8 +540,8 @@ window.addEventListener('message', (event) => {
 
       try {
         if (!state.config) throw new Error('作業清單尚未載入完成。');
-        if (!className) throw new Error('請先輸入班級。');
-        if (!seatNo) throw new Error('請先輸入座號。');
+        if (!validateClassName(className)) throw new Error('班級格式錯誤，請輸入 3 碼數字，例如 303、601。');
+        if (!validateSeatNo(seatNo)) throw new Error('座號格式錯誤，請輸入 2 碼數字，例如 05、13、26。');
         if (!studentName) throw new Error('請先輸入姓名。');
         if (!assignment) throw new Error('請先選擇作業項目。');
         if (!file) throw new Error('請先選擇要上傳的檔案。');
@@ -475,7 +560,11 @@ window.addEventListener('message', (event) => {
         state.uploading = true;
         state.uploadSubmitTs = Date.now();
         state.currentUploadToken = createUploadToken();
-        try { localStorage.removeItem(LOCAL_RESULT_KEY); localStorage.removeItem(LOCAL_RESULT_TS_KEY); } catch (e) {}
+        try {
+          localStorage.removeItem(LOCAL_RESULT_KEY);
+          localStorage.removeItem(LOCAL_RESULT_TS_KEY);
+        } catch (e) {}
+
         setUploading(true);
 
         const base64Data = await readFileAsBase64(file);
@@ -505,12 +594,6 @@ window.addEventListener('message', (event) => {
       }
     }
 
-
-    function handleUploadFrameLoad() {
-      // v7 主要改為由前臺主動輪詢 GAS 查詢上傳結果，
-      // 不再依賴 iframe 成功訊號，因此這裡保留空函式以兼容舊版結構。
-    }
-
     function handleUploadResult(data) {
       state.uploading = false;
       clearUploadTimers();
@@ -532,7 +615,6 @@ window.addEventListener('message', (event) => {
     }
 
     function clearUploadTimers() {
-
       if (state.uploadResultTimer) {
         clearTimeout(state.uploadResultTimer);
         state.uploadResultTimer = null;
@@ -561,9 +643,11 @@ window.addEventListener('message', (event) => {
       $('originalName').value = '';
       $('mimeType').value = '';
       $('size').value = '';
+      $('uploadToken').value = '';
       $('successCard').classList.remove('show');
       updateAssignmentUI();
       hideStatus();
+      refreshFieldValidation();
     }
 
     function setUploading(uploading) {
@@ -571,6 +655,10 @@ window.addEventListener('message', (event) => {
       $('resetBtn').disabled = uploading;
       $('reloadBtn').disabled = uploading;
       $('submitBtn').textContent = uploading ? '⏳ 上傳中…' : '🚀 上傳作業';
+
+      if (!uploading) {
+        refreshFieldValidation();
+      }
     }
 
     function readFileAsBase64(file) {
@@ -585,7 +673,6 @@ window.addEventListener('message', (event) => {
         reader.readAsDataURL(file);
       });
     }
-
 
     function createUploadToken() {
       return 'up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
@@ -616,10 +703,12 @@ window.addEventListener('message', (event) => {
     function queryUploadResultOnce(token) {
       const gasUrl = getGasUrl();
       if (!gasUrl || !token) return;
+
       const callbackName = '__hwUploadResultCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
       const script = document.createElement('script');
       script.async = true;
       script.src = gasUrl + '?api=result&token=' + encodeURIComponent(token) + '&callback=' + callbackName + '&_=' + Date.now();
+
       window[callbackName] = function(data) {
         try {
           if (data && data.found && data.result) {
@@ -630,14 +719,14 @@ window.addEventListener('message', (event) => {
           if (script.parentNode) script.parentNode.removeChild(script);
         }
       };
+
       script.onerror = function() {
         try { delete window[callbackName]; } catch (e) { window[callbackName] = undefined; }
         if (script.parentNode) script.parentNode.removeChild(script);
       };
+
       document.body.appendChild(script);
     }
-
-
 
     function initUploadResultBridge() {
       window.addEventListener('storage', function(event) {
@@ -648,34 +737,6 @@ window.addEventListener('message', (event) => {
           handleUploadResult(data);
         }
       });
-    }
-
-    function startLocalResultPolling() {
-      if (state.localResultPollTimer) {
-        clearInterval(state.localResultPollTimer);
-      }
-      let tries = 0;
-      state.localResultPollTimer = window.setInterval(function() {
-        if (!state.uploading) {
-          clearInterval(state.localResultPollTimer);
-          state.localResultPollTimer = null;
-          return;
-        }
-        tries += 1;
-        try {
-          const raw = localStorage.getItem(LOCAL_RESULT_KEY);
-          const ts = Number(localStorage.getItem(LOCAL_RESULT_TS_KEY) || '0');
-          const data = normalizeMessageData(raw);
-          if (data && ts >= state.uploadSubmitTs) {
-            handleUploadResult(data);
-            return;
-          }
-        } catch (e) {}
-        if (tries >= 30) {
-          clearInterval(state.localResultPollTimer);
-          state.localResultPollTimer = null;
-        }
-      }, 500);
     }
 
     function normalizeMessageData(data) {
@@ -763,92 +824,6 @@ window.addEventListener('message', (event) => {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
-function () {
-  var classInput = document.querySelector('#className') || document.querySelector('[name="className"]');
-  var seatInput = document.querySelector('#seatNo') || document.querySelector('[name="seatNo"]');
-  var submitBtn = document.querySelector('#uploadBtn') || document.querySelector('button[type="submit"]') || document.querySelector('input[type="submit"]');
-  var form = document.querySelector('#uploadForm') || document.querySelector('form');
-
-  if (!classInput || !seatInput || !submitBtn || !form) return;
-
-  function ensureHintEl(input, hintId) {
-    var el = document.getElementById(hintId);
-    if (!el) {
-      el = document.createElement('div');
-      el.id = hintId;
-      el.style.marginTop = '8px';
-      el.style.fontSize = '16px';
-      el.style.fontWeight = '700';
-      el.style.lineHeight = '1.6';
-      input.parentNode.appendChild(el);
-    }
-    return el;
-  }
-
-  var classHint = ensureHintEl(classInput, 'classNameHint');
-  var seatHint = ensureHintEl(seatInput, 'seatNoHint');
-
-  function isValidClassName(value) {
-    return /^\d{3}$/.test(String(value || '').trim());
-  }
-
-  function isValidSeatNo(value) {
-    return /^\d{2}$/.test(String(value || '').trim());
-  }
-
-  function setHint(el, ok, message) {
-    el.textContent = message || '';
-    el.style.color = ok ? '#0f766e' : '#dc2626';
-  }
-
-  function refreshValidation() {
-    var classVal = String(classInput.value || '').trim();
-    var seatVal = String(seatInput.value || '').trim();
-
-    var classOk = isValidClassName(classVal);
-    var seatOk = isValidSeatNo(seatVal);
-
-    if (!classVal) {
-      setHint(classHint, false, '請輸入班級（3 碼數字，例如 303、601）');
-    } else if (!classOk) {
-      setHint(classHint, false, '班級格式錯誤，請輸入 3 碼數字，例如 303、601');
-    } else {
-      setHint(classHint, true, '班級格式正確');
-    }
-
-    if (!seatVal) {
-      setHint(seatHint, false, '請輸入座號（2 碼數字，例如 05、13、26）');
-    } else if (!seatOk) {
-      setHint(seatHint, false, '座號格式錯誤，請輸入 2 碼數字，例如 05、13、26');
-    } else {
-      setHint(seatHint, true, '座號格式正確');
-    }
-
-    classInput.setCustomValidity(classOk ? '' : '班級格式錯誤');
-    seatInput.setCustomValidity(seatOk ? '' : '座號格式錯誤');
-
-    submitBtn.disabled = !(classOk && seatOk);
-    submitBtn.style.opacity = submitBtn.disabled ? '0.6' : '1';
-    submitBtn.style.cursor = submitBtn.disabled ? 'not-allowed' : 'pointer';
-
-    return classOk && seatOk;
-  }
-
-  classInput.addEventListener('input', refreshValidation);
-  classInput.addEventListener('blur', refreshValidation);
-  seatInput.addEventListener('input', refreshValidation);
-  seatInput.addEventListener('blur', refreshValidation);
-
-  form.addEventListener('submit', function (e) {
-    if (!refreshValidation()) {
-      e.preventDefault();
-      alert('班級或座號格式錯誤，請修改後再上傳。\n\n班級：3 碼數字（例如 303、601）\n座號：2 碼數字（例如 05、13、26）');
-      return false;
-    }
-  });
-
-  refreshValidation();
-})();
-</script>
+  </script>
 </body>
 </html>
